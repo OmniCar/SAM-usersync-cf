@@ -1,0 +1,42 @@
+{
+  "name": "sam-usersync-cf",
+  "version": "1.0.0",
+  "description": "SAM-Agillic user synchronisation",
+  "main": "index.js",
+  "scripts": {
+    "deploy-local": "/bin/bash scripts/npm-scripts.sh deployLocal",
+    "deploy-prod": "/bin/bash scripts/npm-scripts.sh deployProd",
+    "deploy-non-prod": "/bin/bash scripts/npm-scripts.sh deployNonProd",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "npm": "6.4.1",
+    "node": "8.x.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OmniCar/SAM-usersync-cf.git"
+  },
+  "keywords": [
+    "SAM",
+    "Omnicar",
+    "Agillic",
+    "pub/sub",
+    "user"
+  ],
+  "author": "Omnicar A/S",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OmniCar/SAM-usersync-cf/issues"
+  },
+  "homepage": "https://github.com/OmniCar/SAM-usersync-cf#readme",
+  "dependencies": {
+    "googleapis": "^34.0.0",
+    "tslib": "^1.9.3"
+  },
+  "devDependencies": {
+    "@types/google-cloud__pubsub": "^0.18.1",
+    "tslint": "^5.11.0",
+    "typescript": "^2.7.2"
+  }
+}
