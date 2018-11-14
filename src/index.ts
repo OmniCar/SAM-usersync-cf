@@ -1,12 +1,11 @@
+// Note about this implementation: Google Cloud Functions (GCF) will attempt to keep the function alive between requests
+// which means that global variables will be retained between requests. I'm leveraging this where possible in order to
+// avoid unnecessary lookups eg. when retrieving variables from Google Runtime Configurator (GRC) and access tokens
+// from Agillic. But also note that the cloud function _will_ be restarted occasionally!
+
 import { Publisher } from '@google-cloud/pubsub'
-import { google } from 'googleapis'
-
-const projectConfigName = 'SAM-usersync-cf' // Same name as the repo.
-
-// Config is loaded manually from Google Runtime Configurator, but since the cloud function is recycled between
-// invocations, this should only happen once in practice.
-const config: Map<string, string> = new Map()
-let configLoaded: boolean = false
+import { isConfigLoaded, loadConfig } from './config'
+import { userCreated } from './handlers'
 
 // Description of context (example):
 // {
@@ -28,66 +27,41 @@ type PubSubContext = {
   timeStamp: string
 }
 
+// When adding new event handles, don't forget to add them to this list.
+const eventHandlers: Map<string, (name: string, data: Publisher.Attributes) => void> = new Map()
+eventHandlers.set('users.created', userCreated)
+
 // userSync receives an event via Google Pub/Sub.
 export async function userSync(data: Publisher.Attributes, context: PubSubContext) {
   if (!isConfigLoaded()) {
     await loadConfig()
   }
-  const agillicBaseURL = getConfig('agillic/base-url')
-  if (!agillicBaseURL) {
-    throw Error(`userSync: missing important variables from Runtime Configurator, please check your GCP project`)
+  const name = String(data.name)
+  if (!name) {
+    throw Error(`Received event without a name`)
   }
-  console.log('Received event:', data, context)
-}
-
-function isConfigLoaded(): boolean {
-  return configLoaded
-}
-
-// loadConfig uses googleapis to contact Runtime Configurator and fetch all variables for this cloud function.
-async function loadConfig() {
-  const key = require('./client-secret-non-production') // @TODO: need to match actual file name.
-  const jwtClient = new google.auth.JWT(key.client_email, undefined, key.private_key, [
-    'https://www.googleapis.com/auth/cloudruntimeconfig',
-  ])
-  const creds = await jwtClient.authorize()
-  const projectId = await google.auth.getProjectId()
-  const rtConfig = google.runtimeconfig('v1beta1')
-  const path = `projects/${projectId}/configs/${projectConfigName}`
-  const res = await rtConfig.projects.configs.variables.list({
-    auth: jwtClient,
-    parent: path,
-    returnValues: true,
-  })
-  if (res.status !== 200) {
-    throw Error(
-      `loadConfig: unable to fetch configuration from Runtime Configurator, reply: ${res.status} ${res.statusText}`,
-    )
+  console.log(`${context.resource.name} Incoming event: ${name}`)
+  const handler = eventHandlers.get(name)
+  if (!handler) {
+    throw Error(`Unsupported event type: ${name}, aborting`)
   }
-  if (!Array.isArray(res.data.variables)) {
-    throw Error(
-      `loadConfig: received reply from Runtime Configurator, but did not receive an array of variables, instead got "${typeof res
-        .data.variables}"`,
-    )
+  console.log(`Handling event: ${name}`)
+  try {
+    await handler(name, data)
+  } catch (err) {
+    console.error(`${name}: Error during processing - ${err.message}`)
+    console.error(`${err}`)
+    console.error('')
+    console.error(`Event failed: ${name}`)
+    return
   }
-  config.clear()
-  for (const cfgVar of res.data.variables) {
-    if (cfgVar.name && cfgVar.text) {
-      const shortName = String(cfgVar.name).replace(`${path}/variables/`, '')
-      config.set(shortName, String(cfgVar.text))
-    }
-  }
-}
-
-// getConfig is a simple wrapper around the GCloud runtime config structure.
-function getConfig(name: string) {
-  return config.get(name)
+  console.log(`Event handled: ${name}`)
 }
 
 // node index.js test
 if (process.argv.length > 2 && process.argv[2] === 'test') {
   userSync(
-    { id: '1' },
+    { name: 'users.created', id: '542' },
     {
       eventId: '5014a019-89ff-4b79-9c0e-d3e8d98dcf31',
       resource: {

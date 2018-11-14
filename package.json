@@ -32,10 +32,18 @@
   "homepage": "https://github.com/OmniCar/SAM-usersync-cf#readme",
   "dependencies": {
     "googleapis": "^34.0.0",
+    "mysql2": "^1.6.4",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5",
+    "simple-oauth2": "^2.2.1",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
     "@types/google-cloud__pubsub": "^0.18.1",
+    "@types/mysql2": "github:types/mysql2",
+    "@types/request": "^2.48.1",
+    "@types/request-promise-native": "^1.0.15",
+    "@types/simple-oauth2": "^2.2.0",
     "tslint": "^5.11.0",
     "typescript": "^2.7.2"
   }
