@@ -5,7 +5,7 @@
 
 import { Publisher } from '@google-cloud/pubsub'
 import { isConfigLoaded, loadConfig } from './config'
-import { userCreated } from './handlers'
+import { userCreated, userUpdated } from './handlers'
 
 // Description of context (example):
 // {
@@ -30,6 +30,7 @@ type PubSubContext = {
 // When adding new event handles, don't forget to add them to this list.
 const eventHandlers: Map<string, (name: string, data: Publisher.Attributes) => void> = new Map()
 eventHandlers.set('users.created', userCreated)
+eventHandlers.set('users.updated', userUpdated)
 
 // userSync receives an event via Google Pub/Sub.
 export async function userSync(data: Publisher.Attributes, context: PubSubContext) {

@@ -1,4 +1,5 @@
 import * as MySQL from 'mysql2/promise'
+import { getConfig } from './config'
 
 export type UserEssentials = {
   id: number
@@ -16,7 +17,16 @@ export async function connect() {
   if (conn) {
     return
   }
-  conn = await MySQL.createConnection({ host: 'localhost', user: 'root', password: 'Develop123', database: 'SAM-dev' })
+  const host = getConfig('database/hostname')
+  const user = getConfig('database/user')
+  const password = getConfig('database/password')
+  const database = getConfig('database/dbname')
+  if (!host || !user || !password || !database) {
+    throw Error(
+      `DB: Missing connection options host, user, password and/or database name, please check your Google Runtime Configurator setup`,
+    )
+  }
+  conn = await MySQL.createConnection({ host, user, password, database })
   prepareStatements()
 }
 
