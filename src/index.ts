@@ -38,11 +38,12 @@ export async function userSync(data: Publisher.Attributes, context: PubSubContex
   if (!isConfigLoaded()) {
     await loadConfig()
   }
+  const decoded = Buffer.from(String(data.data), 'base64').toString()
   let payload: any
   try {
-    payload = JSON.parse(Buffer.from(String(data.data), 'base64').toString())
+    payload = JSON.parse(decoded)
   } catch (err) {
-    err.message = `Unable to parse message: ${String(data.data)}, ${err.message}`
+    err.message = `Unable to parse message: ${decoded}, ${err.message}`
     throw err
   }
   const name = String(payload.name)
