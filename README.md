@@ -6,12 +6,6 @@ as required.
 All compiled JavaScript files need to be in the root - but they are in .gitignore, which means you can't deploy
 succesfully unless you compile first.
 
-Please note that there currently is no handling of environment variables. Possible fixes:
-
-- [#1](https://github.com/fredriks/cloud-functions-runtime-config/blob/master/README.md)
-- [#2](https://medium.com/@TheJBStart/google-cloud-functions-serverless-framework-and-environment-variables-b428218decb9)
-- [#3](https://cloud.google.com/deployment-manager/runtime-configurator/)
-
 Below you'll find instructions on how to get started - enjoy :)
 
 ## Local development
@@ -23,7 +17,8 @@ nvm:
 `wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash`
 `nvm install`
 
-Ensure that there's a `client-secret-non-production.json` in the root directory of your project, with valid configuration settings.
+Ensure that there's a `client-secret-non-production.json` in the root directory of your project, with valid
+configuration settings.
 
 ### Install dependencies
 

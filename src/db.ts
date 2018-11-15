@@ -17,16 +17,21 @@ export async function connect() {
   if (conn) {
     return
   }
+  const socketPath = getConfig('database/socket')
   const host = getConfig('database/hostname')
   const user = getConfig('database/user')
   const password = getConfig('database/password')
   const database = getConfig('database/dbname')
-  if (!host || !user || !password || !database) {
+  if (socketPath) {
+    conn = await MySQL.createConnection({ socketPath })
+  } else if (host && user && password && database) {
+    conn = await MySQL.createConnection({ host, user, password, database })
+  } else {
     throw Error(
-      `DB: Missing connection options host, user, password and/or database name, please check your Google Runtime Configurator setup`,
+      `DB: Missing connection options host, user, password, database name or socket path, please check your Google Runtime Configurator setup`,
     )
   }
-  conn = await MySQL.createConnection({ host, user, password, database })
+
   prepareStatements()
 }
 

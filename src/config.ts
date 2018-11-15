@@ -13,19 +13,11 @@ export function isConfigLoaded(): boolean {
 
 // loadConfig uses googleapis to contact Runtime Configurator and fetch all variables for this cloud function.
 export async function loadConfig() {
-  const key = require('./client-secret-non-production') // @TODO: need to match actual file name.
-  const jwtClient = new google.auth.JWT(key.client_email, undefined, key.private_key, [
-    'https://www.googleapis.com/auth/cloudruntimeconfig',
-  ])
-  const creds = await jwtClient.authorize()
   const projectId = await google.auth.getProjectId()
   const rtConfig = google.runtimeconfig('v1beta1')
   const path = `projects/${projectId}/configs/${projectConfigName}`
-  const res = await rtConfig.projects.configs.variables.list({
-    auth: jwtClient,
-    parent: path,
-    returnValues: true,
-  })
+  const auth = await google.auth.getClient({ projectId })
+  const res = await rtConfig.projects.configs.variables.list({ auth, returnValues: true, parent: path })
   if (res.status !== 200) {
     throw Error(
       `loadConfig: unable to fetch configuration from Runtime Configurator, reply: ${res.status} ${res.statusText}`,

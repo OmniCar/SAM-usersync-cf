@@ -47,13 +47,12 @@ export async function userSync(data: Publisher.Attributes, context: PubSubContex
   if (!handler) {
     throw Error(`Unsupported event type: ${name}, aborting`)
   }
-  logInfo(`Handling event: ${name}`)
   try {
     await handler(name, data)
   } catch (err) {
     logError(`${name}: Error during processing - ${err.message}`)
     logError(`${err}`)
-    logError('')
+    logError(`Payload: ${JSON.stringify(data, null, 2)}`)
     logError(`Event failed: ${name}`)
     return
   }
