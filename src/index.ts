@@ -3,6 +3,7 @@
 // avoid unnecessary lookups eg. when retrieving variables from Google Runtime Configurator (GRC) and access tokens
 // from Agillic. But also note that the cloud function _will_ be restarted occasionally!
 
+import { logInfo, logError } from '@omnicar/sam-log'
 import { Publisher } from '@google-cloud/pubsub'
 import { isConfigLoaded, loadConfig } from './config'
 import { userCreated, userUpdated } from './handlers'
@@ -41,22 +42,22 @@ export async function userSync(data: Publisher.Attributes, context: PubSubContex
   if (!name) {
     throw Error(`Received event without a name`)
   }
-  console.log(`${context.resource.name} Incoming event: ${name}`)
+  logInfo(`${context.resource.name} Incoming event: ${name}`)
   const handler = eventHandlers.get(name)
   if (!handler) {
     throw Error(`Unsupported event type: ${name}, aborting`)
   }
-  console.log(`Handling event: ${name}`)
+  logInfo(`Handling event: ${name}`)
   try {
     await handler(name, data)
   } catch (err) {
-    console.error(`${name}: Error during processing - ${err.message}`)
-    console.error(`${err}`)
-    console.error('')
-    console.error(`Event failed: ${name}`)
+    logError(`${name}: Error during processing - ${err.message}`)
+    logError(`${err}`)
+    logError('')
+    logError(`Event failed: ${name}`)
     return
   }
-  console.log(`Event handled: ${name}`)
+  logInfo(`Event handled: ${name}`)
 }
 
 // node index.js test
@@ -74,7 +75,7 @@ if (process.argv.length > 2 && process.argv[2] === 'test') {
     },
   )
     .then(() => {
-      console.log('Done')
+      logInfo('Done')
     })
-    .catch(console.error)
+    .catch(logError)
 }
