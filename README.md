@@ -83,7 +83,7 @@ and see logs from the emulator by running:
 
 4. Deploy the application: `npm deploy-prod` / `npm deploy-non-prod`.
 
-5. Check the GCloud Console at https://console.cloud.google.com to verify that your setup is working.
+5. Check the [GCloud Console](https://console.cloud.google.com) to verify that your setup is working.
 
    You can test the cloud functional manually by publishing an event to it. Example payload:
 
