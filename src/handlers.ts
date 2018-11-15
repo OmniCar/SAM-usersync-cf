@@ -1,10 +1,8 @@
-import { Publisher } from '@google-cloud/pubsub'
-import { getAgillicAccessToken, PersonResult, getRecipient, updateRecipient, createRecipient } from './agillic'
-import { getConfig } from './config'
+import { createRecipient, getRecipient, updateRecipient } from './agillic'
 import { connect, disconnect, getUserByID, UserEssentials } from './db'
 
 // Event handler for users.created.
-export async function userCreated(name: string, data: Publisher.Attributes) {
+export async function userCreated(name: string, data: any) {
   const usrId = parseInt(String(data.id), 10)
   if (!usrId) {
     throw Error(`${name}: Received event without a user id`)
@@ -45,6 +43,6 @@ export async function userCreated(name: string, data: Publisher.Attributes) {
 
 // Note: for now, we want the same functionality as in "userCreated". This covers the scenario where not all users
 // exists as recipients in Agillic. By using the same algorithm, they will simply be created if they don't exist.
-export async function userUpdated(name: string, data: Publisher.Attributes) {
+export async function userUpdated(name: string, data: any) {
   await userCreated(name, data)
 }

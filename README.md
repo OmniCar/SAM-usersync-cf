@@ -26,6 +26,7 @@ _Note: It requires a bit more experimentation in order to make these steps actua
 nvm:
 
 `wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash`
+
 `nvm install`
 
 Google Cloud Function Emulator
@@ -39,7 +40,7 @@ configuration settings.~~ This is not currently supported.
 
 `npm install`
 
-### Compile application (`tsc`)
+### Compile application (with TypeScript)
 
 `npx tsc`
 

@@ -3,8 +3,8 @@
 // avoid unnecessary lookups eg. when retrieving variables from Google Runtime Configurator (GRC) and access tokens
 // from Agillic. But also note that the cloud function _will_ be restarted occasionally!
 
-import { logInfo, logError } from '@omnicar/sam-log'
 import { Publisher } from '@google-cloud/pubsub'
+import { logError, logInfo } from '@omnicar/sam-log'
 import { isConfigLoaded, loadConfig } from './config'
 import { userCreated, userUpdated } from './handlers'
 
@@ -38,7 +38,14 @@ export async function userSync(data: Publisher.Attributes, context: PubSubContex
   if (!isConfigLoaded()) {
     await loadConfig()
   }
-  const name = String(data.name)
+  let payload: any
+  try {
+    payload = JSON.parse(Buffer.from(String(data.data), 'base64').toString())
+  } catch (err) {
+    err.message = `Unable to parse message: ${String(data.data)}, ${err.message}`
+    throw err
+  }
+  const name = String(payload.name)
   if (!name) {
     throw Error(`Received event without a name`)
   }
@@ -48,11 +55,11 @@ export async function userSync(data: Publisher.Attributes, context: PubSubContex
     throw Error(`Unsupported event type: ${name}, aborting`)
   }
   try {
-    await handler(name, data)
+    await handler(name, payload)
   } catch (err) {
     logError(`${name}: Error during processing - ${err.message}`)
     logError(`${err}`)
-    logError(`Payload: ${JSON.stringify(data, null, 2)}`)
+    logError(`Payload: ${JSON.stringify(payload, null, 2)}`)
     logError(`Event failed: ${name}`)
     return
   }
