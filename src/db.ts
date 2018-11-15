@@ -49,7 +49,7 @@ function prepareStatements() {
     ' FROM user AS u' +
     ' JOIN contact_person AS cp ON cp.contact_person_id = u.contact_person_id' +
     ' JOIN contract_provider AS prov ON prov.contract_provider_id = (' +
-    "SELECT SUBSTRING(SUBSTRING_INDEX(USER.permissions, ':', 2), 4) FROM user WHERE user_id = ?" +
+    "SELECT SUBSTRING(SUBSTRING_INDEX(permissions, ':', 2), 4) FROM user WHERE user_id = ?" +
     ')' +
     ' WHERE u.user_id = ?'
   userSelect = MySQL.format(sql, [])
