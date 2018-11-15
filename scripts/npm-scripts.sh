@@ -7,13 +7,12 @@ deployProd() {
 deployNonProd() {
   npx tsc
   gcloud config set project sam-non-production
-  gcloud functions deploy userSync --runtime nodejs8 --trigger-resource SAM-non-production-users --trigger-event google.pubsub.topic.publish
+  gcloud functions deploy userSync --runtime nodejs8 --trigger-resource SAM-non-production-users --trigger-event google.pubsub.topic.publish --set-env-vars NODE_ENV=staging
 }
 
 deployLocal() {
   npx tsc
-  gcloud config set project sam-non-production
-  gcloud functions deploy userSync --runtime nodejs8 --trigger-resource SAM-local-users --trigger-event google.pubsub.topic.publish
+  functions-emulator deploy userSync --trigger-provider cloud.pubsub --trigger-resource SAM-local-users --trigger-event topic.publish --set-env-vars NODE_ENV=development
 }
 
 # Check if the function exists (bash-specific)

@@ -22,16 +22,22 @@ export async function connect() {
   const user = getConfig('database/user')
   const password = getConfig('database/password')
   const database = getConfig('database/dbname')
+  const opts: MySQL.ConnectionOptions = {
+    user,
+    password,
+    database,
+  }
   if (socketPath) {
-    conn = await MySQL.createConnection({ socketPath })
-  } else if (host && user && password && database) {
-    conn = await MySQL.createConnection({ host, user, password, database })
+    opts.socketPath = socketPath
+  } else if (host) {
+    opts.host = host
   } else {
     throw Error(
       `DB: Missing connection options host, user, password, database name or socket path, please check your Google Runtime Configurator setup`,
     )
   }
 
+  conn = await MySQL.createConnection(opts)
   prepareStatements()
 }
 
