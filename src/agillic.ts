@@ -1,8 +1,8 @@
-import * as URL from 'url'
 import * as Request from 'request-promise-native'
 import * as SOAuth2 from 'simple-oauth2'
-import { UserEssentials } from './db'
+import * as URL from 'url'
 import { getConfig } from './config'
+import { UserEssentials } from './db'
 
 export type PersonResult = { personData: PersonData }
 
@@ -91,7 +91,7 @@ export async function createRecipient(usr: UserEssentials) {
       FULLNAME: usr.name,
       COMPANY_NAME: usr.companyName,
       MOBILE_NUMBER: usr.phone,
-      CUSTOMER_PERMISSION: true,
+      CUSTOMER_PERMISSION: false,
       EMAIL_PERMISSION: false,
       SMS_PERMISSION: false,
       INVESTOR_PERMISSION: false,
@@ -129,12 +129,7 @@ export async function updateRecipient(usr: UserEssentials) {
       FULLNAME: usr.name,
       COMPANY_NAME: usr.companyName,
       MOBILE_NUMBER: usr.phone,
-      // CUSTOMER_PERMISSION: true,
-      // EMAIL_PERMISSION: false,
-      // SMS_PERMISSION: false,
-      // INVESTOR_PERMISSION: false,
-      // EMPLOYEE_PERMISSION: false,
-      // SAM_USERS_PERMISSION: true,
+      SAM_USERS_PERMISSION: true, // Only update the permission we have direct control of.
     },
   }
   try {
