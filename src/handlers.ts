@@ -1,5 +1,6 @@
+import { logInfo } from '@omnicar/sam-log'
 import { createRecipient, getRecipient, updateRecipient } from './agillic'
-import { connect, disconnect, getUserByID, UserEssentials } from './db'
+import { connect, disconnect, getUserByID } from './db'
 
 // Event handler for users.created.
 export async function userCreated(name: string, data: any) {
@@ -15,22 +16,19 @@ export async function userCreated(name: string, data: any) {
     if (!usr) {
       throw Error(`${name}: No user with user id #${usrId}`)
     }
+    if (!['admin', 'seller'].includes(usr.role!)) {
+      logInfo(`Skipping user #${usr.id} because user is a ${usr.role}`)
+      return
+    }
 
     // Check if the user exists. rcpt is "recipient".
     const rcpt = await getRecipient(usr.email)
-    const usrData: UserEssentials = {
-      id: usr.id,
-      email: usr.email,
-      name: usr.name,
-      phone: usr.phone,
-      companyName: usr.companyName,
-    }
     if (rcpt) {
       // Rcpt exists, so we update instead.
-      await updateRecipient(usrData)
+      await updateRecipient(usr)
     } else {
       // Create the rcpt.
-      await createRecipient(usrData)
+      await createRecipient(usr)
     }
   } catch (err) {
     // We just release resources here, error reporting is done in the index file.

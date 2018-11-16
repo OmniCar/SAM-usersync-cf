@@ -3,6 +3,8 @@
 This cloud function listens for user events on Google Pub/sub and synchronises user data with Omnicar's Agillic instance
 as required.
 
+The current requirements is for only admins and sellers to be synchronised with Agillic.
+
 All compiled JavaScript files need to be in the root - but they are in .gitignore, which means you can't deploy
 succesfully unless you compile first.
 

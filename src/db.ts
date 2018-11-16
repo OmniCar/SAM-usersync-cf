@@ -3,9 +3,15 @@ import { getConfig } from './config'
 
 export type UserEssentials = {
   id: number
+  role?: string
   email: string
   name: string
   phone: string
+  address: string
+  zip: string
+  city: string
+  country: string
+  cvr: string
   companyName: string
 }
 
@@ -51,9 +57,13 @@ export async function disconnect() {
 function prepareStatements() {
   // User query.
   const sql =
-    'SELECT u.user_id, u.email, cp.name, cp.phone, prov.administrativeName AS companyname' +
+    'SELECT' +
+    ' u.user_id, u.email, cp.name, cp.phone, addr.address1, addr.address2, addr.city, addr.postal_code AS zip,' +
+    ' c.iso_name AS country, prov.administrativeName AS companyname, prov.cvrCode AS cvr, u.permissions' +
     ' FROM user AS u' +
     ' JOIN contact_person AS cp ON cp.contact_person_id = u.contact_person_id' +
+    ' JOIN address AS addr ON addr.address_id = cp.address_id' +
+    ' JOIN country AS c ON c.country_id = addr.country_id' +
     ' JOIN contract_provider AS prov ON prov.contract_provider_id = (' +
     "SELECT SUBSTRING(SUBSTRING_INDEX(permissions, ':', 2), 4) FROM user WHERE user_id = ?" +
     ')' +
@@ -69,11 +79,24 @@ export async function getUserByID(usrId: number): Promise<UserEssentials | undef
   if (rows.length === 0) {
     return
   }
+  let role: string = 'customer'
+  if (/contracts:delete/i.test(rows[0].permissions)) {
+    role = 'admin'
+  } else if (/contracts:update/i.test(rows[0].permissions)) {
+    role = 'seller'
+  }
+  const address = rows[0].address1 + (rows[0].address2.length ? ', ' + rows[0].address2.trim() : '')
   return {
     id: rows[0].user_id,
+    role,
     email: rows[0].email.trim(),
     name: rows[0].name.trim(),
     phone: rows[0].phone.replace(/ /g, ''),
+    address,
+    zip: rows[0].zip.trim(),
+    city: rows[0].city.trim(),
+    country: rows[0].country.trim(),
+    cvr: rows[0].cvr.trim(),
     companyName: rows[0].companyname.trim(),
   }
 }

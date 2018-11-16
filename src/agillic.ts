@@ -13,6 +13,25 @@ const errAgillicCreds =
 
 let accessToken: SOAuth2.AccessToken
 
+function userEssentialsToPersonData(usr: UserEssentials) {
+  return {
+    EMAIL: usr.email,
+    FULLNAME: usr.name,
+    COMPANY_NAME: usr.companyName,
+    MOBILE_NUMBER: usr.phone,
+    ADDRESS: usr.address,
+    ZIP_CODE: usr.zip,
+    CITY: usr.city,
+    COUNTRY: usr.country,
+    CUSTOMER_PERMISSION: false,
+    EMAIL_PERMISSION: false,
+    SMS_PERMISSION: false,
+    INVESTOR_PERMISSION: false,
+    EMPLOYEE_PERMISSION: false,
+    SAM_USERS_PERMISSION: true,
+  }
+}
+
 // Retrieves an access token from Agillic using OAuth2 Client Credentials Flow.
 // If a token has already been generated, the existing token is simply returned instead. Expired tokens will be renewed.
 // See: https://github.com/lelylan/simple-oauth2#client-credentials-flow.
@@ -86,18 +105,7 @@ export async function createRecipient(usr: UserEssentials) {
   const accessToken = await getAgillicAccessToken(tokenHost, clientId, secret)
   const postURL = URL.resolve(tokenHost!, `/recipients`)
   const body = {
-    personData: {
-      EMAIL: usr.email,
-      FULLNAME: usr.name,
-      COMPANY_NAME: usr.companyName,
-      MOBILE_NUMBER: usr.phone,
-      CUSTOMER_PERMISSION: false,
-      EMAIL_PERMISSION: false,
-      SMS_PERMISSION: false,
-      INVESTOR_PERMISSION: false,
-      EMPLOYEE_PERMISSION: false,
-      SAM_USERS_PERMISSION: true,
-    },
+    personData: userEssentialsToPersonData(usr),
   }
   try {
     const postRes = await Request.post({
@@ -124,13 +132,7 @@ export async function updateRecipient(usr: UserEssentials) {
   const accessToken = await getAgillicAccessToken(tokenHost, clientId, secret)
   const putURL = URL.resolve(tokenHost!, `/recipients/${usr.email}`)
   const body = {
-    personData: {
-      EMAIL: usr.email,
-      FULLNAME: usr.name,
-      COMPANY_NAME: usr.companyName,
-      MOBILE_NUMBER: usr.phone,
-      SAM_USERS_PERMISSION: true, // Only update the permission we have direct control of.
-    },
+    personData: userEssentialsToPersonData(usr),
   }
   try {
     const putRes = await Request.put({
