@@ -1,3 +1,4 @@
+import { logError } from '@omnicar/sam-log'
 import * as MySQL from 'mysql2/promise'
 import { getConfig } from './config'
 
@@ -51,7 +52,12 @@ export async function disconnect() {
   if (!conn) {
     return
   }
-  return await conn.end()
+  try {
+    await conn.end()
+  } catch (err) {
+    logError('Unable to disconnect from database')
+    return
+  }
 }
 
 function prepareStatements() {
@@ -76,7 +82,7 @@ export async function getUserByID(usrId: number): Promise<UserEssentials | undef
     throw Error(`DB: Not connected to a database`)
   }
   const [rows, fields] = await conn.query<MySQL.RowDataPacket[]>(userSelect, [usrId, usrId])
-  if (rows.length === 0) {
+  if (!rows || rows.length === 0) {
     return
   }
   let role: string = 'customer'
@@ -85,7 +91,7 @@ export async function getUserByID(usrId: number): Promise<UserEssentials | undef
   } else if (/contracts:update/i.test(rows[0].permissions)) {
     role = 'seller'
   }
-  const address = rows[0].address1 + (rows[0].address2.length ? ', ' + rows[0].address2.trim() : '')
+  const address = rows[0].address1 + (rows[0].address2 ? ', ' + rows[0].address2.trim() : '')
   return {
     id: rows[0].user_id,
     role,
