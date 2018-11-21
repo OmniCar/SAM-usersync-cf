@@ -87,6 +87,9 @@ export async function getRecipient(email: string) {
       return getRes.personData
     }
   } catch (err) {
+    if (/^404/g.test(err.message)) {
+      return
+    }
     // Specialise the error report.
     err.message = `Request: GET /recipients/${email}, error: ${err.message}`
     throw err

@@ -21,9 +21,6 @@ let conn: MySQL.Connection | undefined
 let userSelect: string = ''
 
 export async function connect() {
-  if (conn) {
-    return
-  }
   const socketPath = getConfig('database/socket')
   const host = getConfig('database/hostname')
   const user = getConfig('database/user')
