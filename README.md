@@ -19,7 +19,7 @@ The cloud function needs two forms of access: the Agillic API, and the SAM MySQL
 variables that you need to set up manually (for now) via Google Runtime Configurator. The variables you'll need are
 described under the deployment section below.
 
-## Local development
+## Local Development
 
 _Note: It requires a bit more experimentation in order to make these steps actually work..._
 
@@ -38,19 +38,19 @@ Google Cloud Function Emulator
 ~~Ensure that there's a `client-secret-non-production.json` in the root directory of your project, with valid
 configuration settings.~~ This is not currently supported.
 
-### Install dependencies
+### Install Dependencies
 
 `npm install`
 
-### Compile application (with TypeScript)
+### Compile Application (With TypeScript)
 
 `npx tsc`
 
-### Deploy functions locally
+### Deploy Functions Locally
 
 `npm deploy-local`
 
-### Fire an event that the cloud function will capture
+### Fire an Event That the Cloud Function Will Capture
 
 `gcloud pubsub topics publish SAM-local-users --message "{id:542,name:'users.created'}"`
 
@@ -98,3 +98,11 @@ and see logs from the emulator by running:
    ```
 
    The user id must be the id of an existing user from the `user` table in the SAM database for the current environment.
+
+## Notes on the Implementation
+
+- Currently, topics are named according to their project names, ie. `production/non-production`. At some point, we want
+  to change them so they are named after the _environment_ instead, but this requires the respective cloud functions to
+  be deployed once for each environment, and it requires them to be environment-aware, which means that we first need to
+  figure out how to inject environment variables into the cloud function. Runtime Configurator will also need to be
+  changed accordingly, so there continues to be a configuration per cloud function.

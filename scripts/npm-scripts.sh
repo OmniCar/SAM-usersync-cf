@@ -1,7 +1,7 @@
 deployProd() {
   npx tsc
   gcloud config set project sam-live
-  gcloud functions deploy userSync --runtime nodejs8 --trigger-resource SAM-live-users --trigger-event google.pubsub.topic.publish
+  gcloud functions deploy userSync --runtime nodejs8 --trigger-resource SAM-production-users --trigger-event google.pubsub.topic.publish
 }
 
 deployNonProd() {
