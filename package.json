@@ -33,7 +33,7 @@
   "dependencies": {
     "@omnicar/sam-log": "0.0.8",
     "googleapis": "^35.0.0",
-    "mysql2": "^1.6.4",
+    "mysql2": "^2.0.0",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5",
     "simple-oauth2": "^2.2.1",
