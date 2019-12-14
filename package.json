@@ -32,7 +32,7 @@
   "homepage": "https://github.com/OmniCar/SAM-usersync-cf#readme",
   "dependencies": {
     "@omnicar/sam-log": "0.0.8",
-    "googleapis": "^35.0.0",
+    "googleapis": "^46.0.0",
     "mysql2": "^1.6.4",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5",
