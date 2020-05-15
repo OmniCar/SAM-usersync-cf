@@ -37,7 +37,7 @@
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5",
     "simple-oauth2": "^2.2.1",
-    "tslib": "^1.9.3"
+    "tslib": "^2.0.0"
   },
   "devDependencies": {
     "@types/google-cloud__pubsub": "0.18.1",
