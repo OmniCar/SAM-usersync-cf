@@ -44,7 +44,7 @@
     "@types/mysql2": "github:types/mysql2",
     "@types/request": "2.48.1",
     "@types/request-promise-native": "1.0.15",
-    "@types/simple-oauth2": "2.2.0",
+    "@types/simple-oauth2": "2.5.5",
     "tslint": "5.11.0",
     "typescript": "3.1.6"
   }
