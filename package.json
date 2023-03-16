@@ -10,7 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
-    "npm": "6.4.1",
+    "npm": "6.14.18",
     "node": "8.x.x"
   },
   "repository": {
